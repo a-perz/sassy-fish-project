@@ -28,12 +28,12 @@
    <AnchorPane fx:id="imageDropArea" prefHeight="150.0" prefWidth="300.0" style="-fx-border-color: black;">
       <children>
          <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="400.0" onDragDropped="#handleDragDropped" onDragOver="#handleDragOver" onMouseClicked="#handleImageClick" pickOnBounds="true" preserveRatio="true" />
-         <Label fx:id="imageUploadLabel" layoutX="145.0" layoutY="55.0" style="-fx-font-weight: bold; -fx-font-size: 14px;" text="📷 Upload Image" />
+         <Label fx:id="imageUploadLabel" layoutX="138.0" layoutY="65.0" prefHeight="20.0" prefWidth="124.0" style="-fx-font-weight: bold; -fx-font-size: 14px;" text="📷 Upload Image *" />
       </children>
    </AnchorPane>
 
    <VBox spacing="5.0">
-      <Label fx:id="titleLabel" style="-fx-font-weight: bold;" text="Title" />
+      <Label fx:id="titleLabel" prefHeight="17.0" prefWidth="42.0" style="-fx-font-weight: bold;" text="Title *" />
       <TextField fx:id="titleField" promptText="Enter title..." />
    </VBox>
 
@@ -43,7 +43,7 @@
    </VBox>
 
    <VBox spacing="5.0">
-      <Label fx:id="tagsLabel" style="-fx-font-weight: bold;" text="Tags" />
+      <Label fx:id="tagsLabel" prefHeight="17.0" prefWidth="52.0" style="-fx-font-weight: bold;" text="Tags *" />
       <AnchorPane fx:id="tagContainer" prefHeight="200.0" prefWidth="200.0">
          <children>
             <CheckBox layoutX="14.0" layoutY="44.0" mnemonicParsing="false" text="Food" textFill="#6aa84f" />
@@ -59,7 +59,7 @@
    </VBox>
 
    <VBox prefHeight="81.0" prefWidth="402.0" spacing="5.0">
-      <Label fx:id="starsLabel" style="-fx-font-weight: bold;" text="Star Rating" />
+      <Label fx:id="starsLabel" prefHeight="17.0" prefWidth="79.0" style="-fx-font-weight: bold;" text="Star Rating *" />
       <HBox fx:id="starContainer" prefHeight="53.0" prefWidth="348.0" spacing="10.0">
          <Label onMouseClicked="#handleStarClicked" text=" ★" textFill="#b9b9b9">
             <font><Font size="36.0" /></font>
@@ -94,6 +94,11 @@
          <Button fx:id="savePostButton" layoutX="319.0" layoutY="24.0" onAction="#savePost" style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Save Post" />
          
          <ToggleButton fx:id="favoriteButton" alignment="CENTER_LEFT" layoutX="40.0" layoutY="-2.0" onAction="#handleFavoriteToggle" prefHeight="68.0" prefWidth="118.0" style="-fx-background-color: transparent; -fx-font-size: 40px;" text="♥" textFill="#b9b9b9" />
+         <Label fx:id="errorLabel" layoutX="192.0" layoutY="61.0" prefHeight="17.0" prefWidth="210.0" style="-fx-background-color: red;" textFill="WHITE" visible="false">
+            <font>
+               <Font name="System Bold" size="12.0" />
+            </font>
+         </Label>
       </children>
    </AnchorPane>
 </VBox>

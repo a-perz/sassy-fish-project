@@ -2,13 +2,12 @@ package com.example.controllers;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import com.example.usermodel.Post;
 import com.example.usermodel.Tag;
 
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -20,7 +19,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 
@@ -59,7 +57,8 @@ public class CreatePostController {
     // CREATE / CANCEL POST
     @FXML private Button createPostButton;
     @FXML private Button cancelPostButton;
-    
+    @FXML private Label errorLabel;
+
     private Post currentPost;
 
 
@@ -155,8 +154,12 @@ public class CreatePostController {
         currentPost.setTitle(titleField.getText()); // title
         currentPost.setDescription(descriptionField.getText()); // description
 
+        // 2. collect the selected tags
 
-        // 2. loop through the tagContainer children (node = tag)
+        // remove old tags (prevents duplicates if save button clicked multiple times)
+        currentPost.clearTags();
+
+        // loop through the tagContainer children (node = tag)
         for (Node node : tagContainer.getChildren()) {
            
             // cast to CheckBox to access isSelected()
@@ -165,21 +168,85 @@ public class CreatePostController {
             // if tag is selected -> add Tag ENUM
             if ( tag.isSelected() ) {
 
-                // 3. add corresponding Tag enum to the Post object
+                // add corresponding Tag enum to the Post object
                 currentPost.addTag(Tag.valueOf(tag.getText().toUpperCase())); 
                     // `tag.getText()` gets the text of the CheckBox | convert to uppercase to match ENUM name
             }
         }    
 
-        // 4. save Post to database
-            // TO DO. create a FeedController w/ ObservableList<Post> feedPosts
-            // feedPosts.add(currentPost);
+        // 3. check if all required fields are filled & handle error messages
+        boolean error = errorCheck();
 
+        // only proceed if there's nothing missing
+        if (!error) {
+
+            // 4. save Post to db
+                // TO DO. create a FeedController w/ ObservableList<Post> feedPosts
+                // feedPosts.add(currentPost);
         
-        // 5. CLOSE WINDOW get back to previous screen (main feed)
-        imageDropArea.getScene().getWindow().hide();
+            // 5. CLOSE WINDOW get back to previous screen (main feed)
+            imageDropArea.getScene().getWindow().hide();
+        }
+    }
+
+    // auxiliar to check if all required fields are filled
+    private boolean errorCheck () {
+
+        boolean missing = false;
+        
+        // missing image upload
+        if ( currentPost.getImage() == null ) {
+            imageUploadLabel.setStyle("-fx-text-fill: red");
+            missing = true;
+        }
+
+        // missing title
+        if ( titleField.getText().isEmpty() ) {
+            titleLabel.setStyle("-fx-text-fill: red");
+            missing = true;
+        }
+
+        // missing tags (0 tags)
+        if (currentPost.getTags().size() == 0) {
+            tagsLabel.setStyle("-fx-text-fill: red");
+            missing = true;
+        }
+
+        // missing star rating
+        if ( currentPost.getStarRating() == 0 ) {
+            starsLabel.setStyle("-fx-text-fill: red");
+            missing = true;
+        }
+
+        // if any of them missing -> missing = true = errorLabel set visible
+        // else (all correct) -> missing = false = errorLabel set !visible
+        errorLabel.setVisible(missing);
+
+        if (missing) {
+
+            // after 3 secs. 
+            PauseTransition pause = new PauseTransition(javafx.util.Duration.seconds(3));
+                    
+            pause.setOnFinished(e -> { 
+                
+                // remove error label
+                errorLabel.setVisible(false);
+                
+                // restore to dafault (black) all labels (change all, don´t care if some weren't missing)
+                imageUploadLabel.setStyle("-fx-text-fill: black");
+                titleLabel.setStyle("-fx-text-fill: black");
+                tagsLabel.setStyle("-fx-text-fill: black");
+                starsLabel.setStyle("-fx-text-fill: black");
+            });
+
+            pause.play();
+        }
+
+        // return if there was any missing or not
+        return missing;
 
     }
+
 
     public Post getCurrentPost() {
         return currentPost;
@@ -187,6 +254,7 @@ public class CreatePostController {
 
     @FXML
     void initialize() {
+        
         // 1. create empty Post
         currentPost = new Post(); // create empty Post object to be filled with data as user creates the post    
     
@@ -197,6 +265,7 @@ public class CreatePostController {
         for (Label star : stars) {
             star.setStyle("-fx-text-fill: #b9b9b9;");
         }
+        currentPost.setStarRating(0);
         
         // 3. favourite starts unselected
         favouriteButton.setSelected(false);
