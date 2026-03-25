@@ -1,29 +1,30 @@
 package com.example.usermodel;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import javafx.scene.image.Image;
 
 public class Post {
 
+    @Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO-INCREMENT ID
+	private Long id;
     private String title;
     private String description;
     private boolean isFavourite;
     private int starRating; // 1-5
     private List<Tag> tags = new ArrayList<>(); // ENUM of tags
+    private LocalDate date;
 
     
     // IMAGE
     private Image image;
     private String imagePath;
-
-    public Post(String title, String description, String imagePath) {
-        this.title = title;
-        this.description = description;
-        this.isFavourite = false;
-        this.image = new Image(imagePath);
-    }
 
     public Post() {
     }
@@ -66,13 +67,20 @@ public class Post {
         return tags;
     }
 
-
     public void addTag(Tag tag) { // tag w/ ENUM sintax (value)
         tags.add(tag);
     }
 
     public void clearTags() {
         tags.clear();
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public Image getImage() {
@@ -82,6 +90,13 @@ public class Post {
     public void setImage(Image image) {
         this.image = image;
     }
+
+    public String getImagePath() {
+        return imagePath;
+    }
     
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
     
 }

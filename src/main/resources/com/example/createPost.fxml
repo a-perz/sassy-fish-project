@@ -17,14 +17,16 @@
    <padding>
       <Insets bottom="20.0" left="25.0" right="25.0" top="20.0" />
    </padding>
-
-   <HBox alignment="CENTER_LEFT">
-      <Label text="Create New Post">
-         <font>
-            <Font name="System Bold" size="24.0" />
-         </font>
-      </Label>
-   </HBox>
+   <AnchorPane prefHeight="200.0" prefWidth="200.0">
+      <children>
+         <Label text="Create New Post">
+            <font>
+               <Font name="System Bold" size="24.0" />
+            </font>
+         </Label>
+         <Label fx:id="dateLabel" layoutX="323.0" layoutY="9.0" prefHeight="17.0" prefWidth="79.0" textAlignment="RIGHT" />
+      </children>
+   </AnchorPane>
    <AnchorPane fx:id="imageDropArea" prefHeight="150.0" prefWidth="300.0" style="-fx-border-color: black;">
       <children>
          <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="400.0" onDragDropped="#handleDragDropped" onDragOver="#handleDragOver" onMouseClicked="#handleImageClick" pickOnBounds="true" preserveRatio="true" />

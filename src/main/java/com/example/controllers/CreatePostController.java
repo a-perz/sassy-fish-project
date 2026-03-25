@@ -2,6 +2,7 @@ package com.example.controllers;
 
 import java.io.File;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 import com.example.usermodel.Post;
@@ -26,6 +27,9 @@ public class CreatePostController {
 
     @FXML private ResourceBundle resources;
     @FXML private URL location;
+
+    // DATE
+    @FXML private Label dateLabel; // NOT NEEDED
 
     // IMAGE UPLOAD
     @FXML private AnchorPane imageDropArea;
@@ -91,6 +95,7 @@ public class CreatePostController {
         
             // 3. update Post object to store the path to the image (for later saving to db)
             currentPost.setImage(img);
+            currentPost.setImagePath(file.toURI().toString() ); //convert the file's path (file.toURI()) to string (.toString()) to store it in the db
                 // also automatically updates the Post.image
         }
     }   
@@ -271,6 +276,9 @@ public class CreatePostController {
         favouriteButton.setSelected(false);
         favouriteButton.setStyle("-fx-text-fill: #b9b9b9;");
 
+        // 4. add today's date (date format: yyyy-mm-dd)
+        currentPost.setDate(LocalDate.now() ); // add date to the Post object db
+        dateLabel.setText(currentPost.getDate().toString() ); // display on window (make it String)
     }
 
 }
