@@ -2,11 +2,12 @@ module com.example {
     requires javafx.controls;
     requires javafx.fxml;
     requires jakarta.persistence;
+    requires javafx.graphics;
 
-    opens com.example to javafx.fxml;
-    opens com.SassyMeProject.controllers to javafx.fxml;
-    opens com.SassyMeProject.usermodel;
-    exports com.example;
-    exports com.SassyMeProject.controllers;
-    exports com.SassyMeProject.usermodel;
+    opens com.example.controllers to javafx.fxml;
+    exports com.example.controllers;
+
+    opens com.example.usermodel to javafx.fxml;
+    exports com.example.usermodel;
+
 }

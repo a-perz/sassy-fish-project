@@ -1,12 +1,13 @@
-package com.SassyMeProject.controllers;
+package com.example.controllers;
+
+import com.example.usermodel.User;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import com.SassyMeProject.usermodel.User;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 
 public class ProfileController {
     @FXML private TextField usernameField;
