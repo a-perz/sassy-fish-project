@@ -4,24 +4,32 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import javafx.scene.image.Image;
+
+import eus.ehu.usermodel.Comment;
 
 public class Post {
 
     @Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO-INCREMENT ID
-	private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO-INCREMENT ID
+    private Long id;
     private String title;
     private String description;
+    private String author;
     private boolean isFavourite;
     private double starRating = 0.0; // 1-5
     private List<Tag> tags = new ArrayList<>(); // ENUM of tags
     private LocalDate date;
 
-    
+    // cascade: if a post is deleted, its comments are also deleted
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
     // IMAGE
     private Image image;
     private String imagePath;
@@ -81,6 +89,32 @@ public class Post {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void addComment(Comment comment) {
+        if (comment != null) {
+            comment.setPost(this);
+            comments.add(comment);
+        }
+    }
+
+    public void removeComment(Comment comment) {
+        if (comment != null) {
+            comments.remove(comment);
+            comment.setPost(null);
+        }
     }
 
     public Image getImage() {
