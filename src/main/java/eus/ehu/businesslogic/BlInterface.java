@@ -7,12 +7,12 @@ import eus.ehu.usermodel.Post;
 
 public interface BlInterface {
     
-    // adds a comment to a specific post
+    // adds a comment to a specific post and saves it to the database
     void addCommentToPost(Post post, Comment comment);
     
-    // saves a newly created post
+    // persists a newly created post into the database
     void savePost(Post post);
 
-    // retrieves all posts for the main feed
+    // retrieves a list of all posts currently stored in the databas
     List<Post> getAllPosts();
 }

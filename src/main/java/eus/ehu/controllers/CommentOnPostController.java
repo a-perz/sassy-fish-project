@@ -29,6 +29,8 @@ public class CommentOnPostController {
     private User currentUser;
     private BlInterface businessLogic; 
 
+
+    // initialize method to set up the character limit and word count display
     @FXML
     void initialize() {
         int maxCharacters = 150;
@@ -60,10 +62,13 @@ public class CommentOnPostController {
         this.businessLogic = bl;
     }
 
+    // handle the save button click event
     @FXML
     void handleSave() {
-        String commentText = commentArea.getText();
+        String commentText = commentArea.getText(); // get the comment text from the text area
         
+        // basic validaiton
+
         if (commentText.trim().isEmpty()) {
             System.out.println("comment is empty!");
             return;
@@ -72,16 +77,17 @@ public class CommentOnPostController {
             System.out.println("post or user context is missing!");
             return;
         }
+
+        // print the comment details to the console
         System.out.println("comment saved: " + commentText);
         
-        // 1. create the comment object
+        // create the comment object
         Comment newComment = new Comment(currentUser.getUsername(), commentText, LocalDate.now(), currentPost);
         
-        // 2. add the comment to the post internally
-        //currentPost.addComment(newComment); 
-        // not needed anymore since the business logic will handle this
+        // add the comment to the post internally (in mem)
+        currentPost.addComment(newComment); 
 
-        // 3. TODO: send it to the database via business logic
+        // send it to the database via business logic
         businessLogic.addCommentToPost(currentPost, newComment);
         
         // clear the comment area after saving
