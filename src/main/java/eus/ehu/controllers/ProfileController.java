@@ -1,6 +1,7 @@
 package eus.ehu.controllers;
 
 import eus.ehu.data_access.DbAccessManager;
+import eus.ehu.businesslogic.BlInterface;
 import eus.ehu.usermodel.Post;
 import eus.ehu.usermodel.User;
 
@@ -17,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 
 public class ProfileController {
+
     @FXML private Label usernameLabel;
     @FXML private Label bioLabel;
     @FXML private ImageView profileImageView; 
@@ -27,13 +29,33 @@ public class ProfileController {
     @FXML private VBox feedContainer;
 
     //private ManageProfileUseCase manageProfileUseCase;
+    private BlInterface businessLogic;
     private User currentUser;
 
+    // This method is called from FeedController right before switching scenes
+    public void initData(BlInterface bl, User user) {
+        this.businessLogic = bl;
+        this.currentUser = user;
+
+        // Now that we have the data, we can load the profile info
+        loadUserProfile();
+        loadFeedAndFavorites();
+    }
+
     @FXML
-    public void initialize() {
+    /*public void initialize() {
         //manageProfileUseCase = new ManageProfileUseCase(); (TO SOLVE: Use case integration)
         loadUserProfile();
         loadFeedAndFavorites();
+        if (profileImageView != null) {
+            makeCircular(profileImageView);
+        }
+        if (feedScroll != null) {
+            feedScroll.setFitToWidth(true);
+        }
+    }*/
+    public void initialize() {
+        // We only do visual setup here, data loading moved to initData()
         if (profileImageView != null) {
             makeCircular(profileImageView);
         }
@@ -64,10 +86,16 @@ public class ProfileController {
 
     private void loadFeedAndFavorites() {
         try {
-            DbAccessManager dbManager = new DbAccessManager();
-            List<Post> posts = dbManager.getPostsByUser(currentUser.getUsername());
+            /*DbAccessManager dbManager = new DbAccessManager();
+            List<Post> posts = dbManager.getAllPosts();*/
+
+            // CRITICAL CHANGE: Use the injected businessLogic instead of creating a new DbAccessManager!
+            // This ensures we reuse the same database connection
+            List<Post> posts = businessLogic.getAllPosts();
+
             showFeedPosts(posts);
             showFavouritePosts(posts);
+
         } catch (Exception e) {
             setErrorMessage("Error loading posts: " + e.getMessage());
             showEmptyFeed();
@@ -75,7 +103,7 @@ public class ProfileController {
         }
     }
 
-    private void showFeedPosts(List<Post> posts) {
+    /*private void showFeedPosts(List<Post> posts) {
         if (feedContainer == null) {
             return;
         }
@@ -89,6 +117,28 @@ public class ProfileController {
         for (Post post : posts) {
             feedContainer.getChildren().add(createPostCard(post));
         } // Ineficiente, pero suficiente para esta demo. Para mejorar, se podría implementar paginación o carga bajo demanda.
+    }*/
+
+    private void showFeedPosts(List<Post> posts) {
+        if (feedContainer == null) {
+            return;
+        }
+
+        feedContainer.getChildren().clear();
+        
+        // Filter posts to only show ones authored by the current user
+        List<Post> userPosts = posts.stream()
+                .filter(p -> p.getAuthor() != null && p.getAuthor().equals(currentUser.getUsername()))
+                .collect(Collectors.toList());
+
+        if (userPosts.isEmpty()) {
+            showEmptyFeed();
+            return;
+        }
+
+        for (Post post : userPosts) {
+            feedContainer.getChildren().add(createPostCard(post));
+        } 
     }
 
     public void showPosts(List<Post> posts) {

@@ -43,26 +43,53 @@ public class DbAccessManager {
         System.out.println("DataBase is closed");
     }
 
+    // vNEW VERSION W/ FIXED USER-POST LINKING LOGIC
     public void storePost(Post post) {
-        db.getTransaction().begin();
-        User author = post.getUser();
-        if(author != null) {
-            User managedAuthor = db.find(User.class, author.getId());
-            if(managedAuthor == null) {
-                System.out.println("Author not found in database!");
-                db.persist(author); // if the author is not in the database, we need to save it first to get an ID
-                managedAuthor = db.find(User.class, author.getId());
-            }
-            post.setUser(managedAuthor); // link the post to the managed user entity
-            if (post.getAuthor() == null) {
-                post.setAuthor(managedAuthor.getUsername());
-            }
-            managedAuthor.getPosts().add(post); // link the post to the user in memory
-            db.persist(post);
-        }         else {
-            System.out.println("Post has no author!");
+        // 1. Prevent the "Transaction already active" error
+        // Check if there is an ongoing transaction before starting a new one
+        if (!db.getTransaction().isActive()) {
+            db.getTransaction().begin();
         }
-        db.getTransaction().commit();
+        
+        try {
+            User author = post.getUser();
+            if(author != null) {
+                User managedAuthor = null;
+                
+                // 2. ONLY query the database if the user already has an ID assigned
+                // This prevents IllegalArgumentException for fake/unsaved users
+                if (author.getId() != null) {
+                    managedAuthor = db.find(User.class, author.getId());
+                }
+                
+                // 3. If we didn't find them (or if it was our fake user without an ID), save them first
+                if(managedAuthor == null) {
+                    System.out.println("Author is new or fake, saving to database first to get an ID...");
+                    db.persist(author); // This automatically assigns a real ID to the user object
+                    managedAuthor = author; 
+                }
+                
+                // Link the post and the author in both directions
+                post.setUser(managedAuthor); 
+                managedAuthor.getPosts().add(post); 
+            } else {
+                System.out.println("Post has no author!");
+            }
+            
+            // 4. Actually save the post to the database!
+            db.persist(post);
+            
+            // Commit the transaction to make changes permanent
+            db.getTransaction().commit();
+            System.out.println("Post successfully saved to Database!");
+            
+        } catch (Exception e) {
+            // If anything fails, rollback the transaction so the database doesn't hang
+            if (db.getTransaction().isActive()) {
+                db.getTransaction().rollback();
+            }
+            e.printStackTrace();
+        }
     }
 
     public List<Post> getAllPosts() {
