@@ -1,42 +1,45 @@
 package eus.ehu.controllers;
 
+import eus.ehu.data_access.DbAccessManager;
+import eus.ehu.usermodel.Post;
 import eus.ehu.usermodel.User;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 
 public class ProfileController {
-    @FXML private TextField usernameField;
-    @FXML private TextField bioField;
-    @FXML private ComboBox<String> locationComboBox;
-    @FXML private Label errorLabel;
+    @FXML private Label usernameLabel;
+    @FXML private Label bioLabel;
     @FXML private ImageView profileImageView; 
     @FXML private ImageView favourite1;
     @FXML private ImageView favourite2;
     @FXML private ImageView favourite3;
-
-    @FXML private Button editButton;
-    @FXML private Button saveButton;
-    @FXML private Button cancelButton;
-    @FXML private ImageView editIconView;
+    @FXML private ScrollPane feedScroll;
+    @FXML private VBox feedContainer;
 
     //private ManageProfileUseCase manageProfileUseCase;
     private User currentUser;
-    private boolean isEditing = false;
 
     @FXML
     public void initialize() {
         //manageProfileUseCase = new ManageProfileUseCase(); (TO SOLVE: Use case integration)
         loadUserProfile();
-        setEditMode(false);
-        makeCircular(profileImageView);
-        setupHoverEffect();
+        loadFeedAndFavorites();
+        if (profileImageView != null) {
+            makeCircular(profileImageView);
+        }
+        if (feedScroll != null) {
+            feedScroll.setFitToWidth(true);
+        }
     }
 
     private void loadUserProfile() {
@@ -44,65 +47,138 @@ public class ProfileController {
             // Simulación de carga de usuario actual (TO SOLVE: Integrar con base de datos)
             currentUser = new User("sassy_user", "Sassy User");
             currentUser.setBio("This is my bio!");
-            currentUser.setLocation("New York");
-            //currentUser.setProfilePicturePath("path/to/profile/picture.jpg");
-            usernameField.setText(currentUser.getUsername());
-            bioField.setText(currentUser.getBio());
-            locationComboBox.getItems().addAll("New York", "Los Angeles", "Chicago", "Houston", "Miami");
-            locationComboBox.setValue(currentUser.getLocation());
-            if (currentUser.getProfilePicturePath() != null) {
-                profileImageView.setImage(new Image(currentUser.getProfilePicturePath()));
-            } 
+            //currentUser.setProfilePicturePath("path/to/profile/picture.jpg"); (cosa que no funciona de momento, las bases de datos pueden guardar .jpg??)
+            if (usernameLabel != null) {
+                usernameLabel.setText("@" + currentUser.getUsername());
+            }
+            if (bioLabel != null) {
+                bioLabel.setText(currentUser.getBio());
+            }
+            if (profileImageView != null) {
+                profileImageView.setImage(loadImage(currentUser.getProfilePicturePath(), "/default pfp.jpg"));
+            }
         } catch (Exception e) {
-            errorLabel.setText("Error loading profile: " + e.getMessage());
+            setErrorMessage("Error loading profile: " + e.getMessage());
         }
     }
 
-    @FXML
-    private void handleEditProfile() {
-        setEditMode(true);
-    } //TO SOLVE: Put it in the EditButton action in the FXML file
-
-    @FXML
-    private void handleSaveProfile() { //Again TO SOLVE with database integration
-        errorLabel.setText("");
-        if (usernameField.getText().isEmpty()) {
-            errorLabel.setText("Username cannot be empty.");
-            return;
-        }
-        if (bioField.getText().length() > 150) {
-            errorLabel.setText("Bio cannot exceed 150 characters.");
-            return;
-        }
-        if (locationComboBox.getValue() == null) {
-            errorLabel.setText("Please select a location.");
-            return;
-        }
-
+    private void loadFeedAndFavorites() {
         try {
-            currentUser.setUsername(usernameField.getText());
-            currentUser.setBio(bioField.getText());
-            currentUser.setLocation(locationComboBox.getValue());
-            //manageProfileUseCase.updateProfile(currentUser); (TO SOLVE: Integrar con el caso de uso)
-            setEditMode(false);
+            DbAccessManager dbManager = new DbAccessManager();
+            List<Post> posts = dbManager.getAllPosts();
+            showFeedPosts(posts);
+            showFavouritePosts(posts);
         } catch (Exception e) {
-            errorLabel.setText("Error saving profile: " + e.getMessage());
+            setErrorMessage("Error loading posts: " + e.getMessage());
+            showEmptyFeed();
+            showDefaultFavorites();
         }
     }
 
-    @FXML
-    private void setEditMode(boolean editing) {
-        isEditing = editing;
+    private void showFeedPosts(List<Post> posts) {
+        if (feedContainer == null) {
+            return;
+        }
 
-        //Textos a editar
-        usernameField.setEditable(editing);
-        bioField.setEditable(editing);
-        locationComboBox.setDisable(!editing);
+        feedContainer.getChildren().clear();
+        if (posts == null || posts.isEmpty()) {
+            showEmptyFeed();
+            return;
+        }
 
-        //Vista de botones
-        editButton.setDisable(editing);
-        saveButton.setDisable(!editing);
-        cancelButton.setDisable(!editing);
+        for (Post post : posts) {
+            feedContainer.getChildren().add(createPostCard(post));
+        } // Ineficiente, pero suficiente para esta demo. Para mejorar, se podría implementar paginación o carga bajo demanda.
+    }
+
+    private void showFavouritePosts(List<Post> posts) {
+        List<Post> favouritePosts = posts == null ? List.of() : posts.stream()
+            .filter(Post::getIsFavourite)
+            .limit(3)
+            .collect(Collectors.toList());
+
+        ImageView[] favouriteViews = {favourite1, favourite2, favourite3};
+        for (int index = 0; index < favouriteViews.length; index++) {
+            Post favouritePost = index < favouritePosts.size() ? favouritePosts.get(index) : null;
+            String imagePath = favouritePost != null ? favouritePost.getImagePath() : null;
+            setImage(favouriteViews[index], imagePath, "/default.png");
+        }
+    }
+
+    private void showDefaultFavorites() {
+        setImage(favourite1, null, "/default.png");
+        setImage(favourite2, null, "/default.png");
+        setImage(favourite3, null, "/default.png");
+    }
+
+    private void showEmptyFeed() {
+        if (feedContainer == null) {
+            return;
+        }
+
+        Label emptyLabel = new Label("No hay posts todavía.");
+        emptyLabel.setStyle("-fx-text-fill: #64748b; -fx-font-size: 15px; -fx-padding: 12 8 12 8;");
+        feedContainer.getChildren().setAll(emptyLabel);
+    }
+
+    private HBox createPostCard(Post post) {
+        HBox postCard = new HBox(16);
+        postCard.setStyle("-fx-background-color: white; -fx-background-radius: 18; -fx-border-radius: 18; -fx-border-color: #e2e8f0; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.08), 12, 0, 0, 3);");
+        postCard.setPrefWidth(680);
+
+        ImageView postImageView = new ImageView(loadImage(post.getImagePath(), "/default.png"));
+        postImageView.setFitWidth(180);
+        postImageView.setFitHeight(135);
+        postImageView.setPreserveRatio(true);
+        postImageView.setSmooth(true);
+
+        VBox postContent = new VBox(6);
+        postContent.setStyle("-fx-padding: 18;");
+
+        Label titleLabel = new Label(post.getTitle() == null ? "Untitled post" : post.getTitle());
+        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a;");
+
+        Label authorLabel = new Label(post.getAuthor() == null ? "Unknown author" : "by " + post.getAuthor());
+        authorLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748b;");
+
+        Label descriptionLabel = new Label(post.getDescription() == null ? "" : post.getDescription());
+        descriptionLabel.setWrapText(true);
+        descriptionLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #334155;");
+
+        postContent.getChildren().addAll(titleLabel, authorLabel, descriptionLabel);
+        postCard.getChildren().addAll(postImageView, postContent);
+        return postCard;
+    }
+
+    private Image loadImage(String imagePath, String fallbackResource) {
+        try {
+            if (imagePath != null && !imagePath.isBlank()) {
+                return new Image(imagePath, true);
+            }
+        } catch (Exception ignored) {
+            // Fall back to bundled resource below.
+        }
+
+        var fallbackUrl = getClass().getResource(fallbackResource);
+        if (fallbackUrl != null) {
+            return new Image(fallbackUrl.toExternalForm(), true);
+        }
+        return null;
+    }
+
+    private void setImage(ImageView imageView, String imagePath, String fallbackResource) {
+        if (imageView == null) {
+            return;
+        }
+
+        Image image = loadImage(imagePath, fallbackResource);
+        if (image != null) {
+            imageView.setImage(image);
+        }
+    }
+
+    private void setErrorMessage(String message) {
+        System.err.println(message);
     }
 
     private void makeCircular(ImageView imageView){
@@ -112,19 +188,4 @@ public class ProfileController {
         imageView.setClip(clip);
     }
 
-    @FXML
-    private void handleCancelEdit() {
-        loadUserProfile();
-        setEditMode(false);
-    }
-
-    private void setupHoverEffect(){
-        profileImageView.setOnMouseEntered(e -> {
-            editIconView.setVisible(true);
-        });
-
-        profileImageView.setOnMouseExited(e -> {
-            editIconView.setVisible(false);
-        });
-    }
 }

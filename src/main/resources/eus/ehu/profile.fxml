@@ -1,32 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<BorderPane prefHeight="720.0" prefWidth="1200.0" style="-fx-background-color: linear-gradient(to bottom right, #fffdf7, #f8fafc);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eus.ehu.controllers.ProfileController">
+   <center>
+      <HBox spacing="24.0">
+         <padding>
+            <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+         </padding>
+         <ScrollPane fx:id="profileScroll" fitToWidth="true" hbarPolicy="NEVER" prefWidth="360.0" style="-fx-background-color: transparent; -fx-background: transparent;" HBox.hgrow="NEVER">
+            <content>
+               <VBox spacing="18.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.10), 18, 0, 0, 4);">
+                  <padding>
+                     <Insets bottom="24.0" left="22.0" right="22.0" top="22.0" />
+                  </padding>
+                  <VBox spacing="14.0">
+                     <children>
+                        <StackPane alignment="CENTER">
+                           <children>
+                              <ImageView fx:id="profileImageView" fitHeight="170.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" />
+                           </children>
+                        </StackPane>
+                        <Label style="-fx-font-family: 'System'; -fx-font-size: 13px; -fx-text-fill: #64748b;" text="Usuario" />
+                        <Label fx:id="usernameLabel" style="-fx-font-family: 'System'; -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a;" text="@user" wrapText="true" />
+                        <Label style="-fx-font-family: 'System'; -fx-font-size: 13px; -fx-text-fill: #64748b;" text="Biografía" />
+                        <Label fx:id="bioLabel" style="-fx-font-family: 'System'; -fx-font-size: 14px; -fx-text-fill: #334155;" text="Bio del usuario" wrapText="true" />
+                     </children>
+                  </VBox>
+                  <Separator />
+                  <VBox spacing="12.0">
+                     <children>
+                        <Label style="-fx-font-family: 'System'; -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #0f172a;" text="Favoritos" />
+                        <HBox spacing="12.0">
+                           <children>
+                              <ImageView fx:id="favourite1" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" />
+                              <ImageView fx:id="favourite2" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" />
+                              <ImageView fx:id="favourite3" fitHeight="95.0" fitWidth="95.0" pickOnBounds="true" preserveRatio="true" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </VBox>
+            </content>
+         </ScrollPane>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <VBox prefHeight="400.0" prefWidth="300.0">
-         <children>
-            <ImageView fx:id="profileImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../default%20pfp.jpg" />
-               </image>
-            </ImageView>
-            <TextField fx:id="usernameField" />
-            <TextField fx:id="bioField" />
-            <HBox prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <ImageView fx:id="favourite1" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                  <ImageView fx:id="favourite2" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                  <ImageView fx:id="favourite3" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-               </children>
-            </HBox>
-         </children>
-      </VBox>
-      <VBox prefHeight="400.0" prefWidth="300.0" />
-   </children>
-</HBox>
+         <ScrollPane fx:id="feedScroll" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" HBox.hgrow="ALWAYS">
+            <content>
+               <VBox fx:id="feedContainer" spacing="16.0" style="-fx-background-color: transparent;">
+                  <padding>
+                     <Insets bottom="4.0" left="4.0" right="16.0" top="4.0" />
+                  </padding>
+               </VBox>
+            </content>
+         </ScrollPane>
+      </HBox>
+   </center>
+</BorderPane>
