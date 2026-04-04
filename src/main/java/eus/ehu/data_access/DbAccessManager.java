@@ -33,7 +33,11 @@ public class DbAccessManager {
         System.out.println("DataBase opened");
 
     }
-    
+    public void storeUser(User user) {
+        db.getTransaction().begin();
+        db.persist(user);
+        db.getTransaction().commit();
+    }
     public void close() {
         db.close();
         System.out.println("DataBase is closed");

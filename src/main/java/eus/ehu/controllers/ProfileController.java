@@ -141,6 +141,10 @@ public class ProfileController {
         } 
     }
 
+    public void showPosts(List<Post> posts) {
+        showFeedPosts(posts);
+    }
+
     private void showFavouritePosts(List<Post> posts) {
         List<Post> favouritePosts = posts == null ? List.of() : posts.stream()
             .filter(Post::getIsFavourite)
@@ -166,7 +170,7 @@ public class ProfileController {
             return;
         }
 
-        Label emptyLabel = new Label("No hay posts todavía.");
+        Label emptyLabel = new Label("No posts yet.");
         emptyLabel.setStyle("-fx-text-fill: #64748b; -fx-font-size: 15px; -fx-padding: 12 8 12 8;");
         feedContainer.getChildren().setAll(emptyLabel);
     }
