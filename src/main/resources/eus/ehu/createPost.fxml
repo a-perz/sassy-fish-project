@@ -94,12 +94,10 @@
    </VBox>
    <AnchorPane prefHeight="81.0" prefWidth="402.0">
       <children>
-         <Label fx:id="favoriteLabel" layoutY="20.0" prefHeight="35.0" prefWidth="65.0" style="-fx-font-weight: bold;" text="Favourite" />
-         
+         <Label fx:id="favouriteLabel" layoutY="20.0" prefHeight="35.0" prefWidth="65.0" style="-fx-font-weight: bold;" text="Favourite" />      
          <Button fx:id="cancelPostButton" layoutX="245.0" layoutY="23.0" onAction="#cancelPost" prefHeight="29.0" prefWidth="63.0" style="-fx-font-weight: bold;" text="Cancel" />
-         <Button fx:id="savePostButton" layoutX="319.0" layoutY="24.0" onAction="#savePost" style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Save Post" />
-         
-         <ToggleButton fx:id="favoriteButton" alignment="CENTER_LEFT" layoutX="40.0" layoutY="-2.0" onAction="#handleFavoriteToggle" prefHeight="68.0" prefWidth="118.0" style="-fx-background-color: transparent; -fx-font-size: 40px;" text="♥" textFill="#b9b9b9" />
+         <Button fx:id="createPostButton" layoutX="319.0" layoutY="24.0" onAction="#savePost" style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Save Post" />
+         <ToggleButton fx:id="favouriteButton" alignment="CENTER_LEFT" layoutX="40.0" layoutY="-2.0" onAction="#handleFavoriteToggle" prefHeight="68.0" prefWidth="118.0" style="-fx-background-color: transparent; -fx-font-size: 40px;" text="♥" textFill="#b9b9b9" />
          <Label fx:id="errorLabel" layoutX="192.0" layoutY="61.0" prefHeight="17.0" prefWidth="210.0" style="-fx-background-color: red;" textFill="WHITE" visible="false">
             <font>
                <Font name="System Bold" size="12.0" />

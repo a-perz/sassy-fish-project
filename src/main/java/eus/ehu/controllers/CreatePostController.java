@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import eus.ehu.businesslogic.BlInterface;
 import eus.ehu.usermodel.Post;
 import eus.ehu.usermodel.Tag;
+import eus.ehu.usermodel.User;
 
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
@@ -16,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -23,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import javafx.scene.input.DragEvent;
 
 public class CreatePostController {
 
@@ -39,7 +42,7 @@ public class CreatePostController {
 
     // TITLE
     @FXML private Label titleLabel;
-    @FXML private TextArea titleField;
+    @FXML private TextField titleField;
 
     // DESCRIPTION
     @FXML private Label descriptionLabel;
@@ -114,6 +117,12 @@ public class CreatePostController {
                 // also automatically updates the Post.image
         }
     }   
+
+    @FXML
+    void handleDragOver(DragEvent event) {
+        // TODO:
+        // photo dragged over the image area -> change style to indicate that the user can drop the photo there 
+    }
 
     @FXML
     void handleStarClicked(MouseEvent event) {
@@ -192,9 +201,11 @@ public class CreatePostController {
     void cancelPost() {
 
         // CLOSE WINDOW get back to previous screen (main feed)
-        imageDropArea.getScene().getWindow().hide();
+        //imageDropArea.getScene().getWindow().hide();
 
             // no need to clear and reset everything cause we create a new CreatePostController (with empty Post and unselected fields) every time we open the CreatePost screen
+    
+        goBackToFeed();
     }
 
     @FXML
@@ -236,7 +247,10 @@ public class CreatePostController {
                 businessLogic.savePost(currentPost);
         
             // 5. CLOSE WINDOW get back to previous screen (main feed)
-            imageDropArea.getScene().getWindow().hide();
+            //imageDropArea.getScene().getWindow().hide();
+
+            // 5. go back to feed and refresh the posts to show the new post (instead of just going back without refreshing and having to click the profile button to see the new post in the feed)
+            goBackToFeed();
         }
     }
 
@@ -325,6 +339,21 @@ public class CreatePostController {
         // 4. add today's date (date format: yyyy-mm-dd)
         currentPost.setDate(LocalDate.now() ); // add date to the Post object db
         dateLabel.setText(currentPost.getDate().toString() ); // display on window (make it String)
+    }
+
+    // met o go back to the feed after creating a post (called at the end of savePost() and cancelPost())
+    private void goBackToFeed() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/eus/ehu/FeedPage.fxml"));
+            javafx.scene.Parent root = loader.load();
+            
+            // take the user back to the feed page (switch scene)
+            javafx.stage.Stage stage = (javafx.stage.Stage) titleField.getScene().getWindow();
+            stage.setScene(new javafx.scene.Scene(root));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

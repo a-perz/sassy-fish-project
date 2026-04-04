@@ -27,7 +27,7 @@ public class User {
     private String profilePicturePath;
 
     @OneToMany(mappedBy = "user")
-    private java.util.List<Post> posts;
+    private java.util.List<Post> posts = new java.util.ArrayList<>();
 
     public User() {
     }   //Default constructor for JPA  
