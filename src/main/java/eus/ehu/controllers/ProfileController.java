@@ -1,13 +1,16 @@
 package eus.ehu.controllers;
 
-import eus.ehu.businesslogic.BlInterface;
+import eus.ehu.data_access.DbAccessManager;
 import eus.ehu.usermodel.Post;
 import eus.ehu.usermodel.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import eus.ehu.businesslogic.BusinessLogic;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -15,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 
 public class ProfileController {
 
@@ -28,13 +32,12 @@ public class ProfileController {
     @FXML private VBox feedContainer;
 
     //private ManageProfileUseCase manageProfileUseCase;
-    private BlInterface businessLogic;
+    private BusinessLogic businessLogic;
     private User currentUser;
 
     // This method is called from FeedController right before switching scenes
-    public void initData(BlInterface bl, User user) {
+    public void initData(BusinessLogic bl) {
         this.businessLogic = bl;
-        this.currentUser = user;
 
         // Now that we have the data, we can load the profile info
         loadUserProfile();
@@ -42,17 +45,6 @@ public class ProfileController {
     }
 
     @FXML
-    /*public void initialize() {
-        //manageProfileUseCase = new ManageProfileUseCase(); (TO SOLVE: Use case integration)
-        loadUserProfile();
-        loadFeedAndFavorites();
-        if (profileImageView != null) {
-            makeCircular(profileImageView);
-        }
-        if (feedScroll != null) {
-            feedScroll.setFitToWidth(true);
-        }
-    }*/
     public void initialize() {
         // We only do visual setup here, data loading moved to initData()
         if (profileImageView != null) {
@@ -65,11 +57,7 @@ public class ProfileController {
 
     private void loadUserProfile() {
         try {
-            // Keep the injected user when available; only use a fallback for standalone UI previews.
-            if (currentUser == null) {
-                currentUser = new User("sassy_user", "sassy_user@example.com");
-                currentUser.setBio("This is my bio!");
-            }
+            
             //currentUser.setProfilePicturePath("path/to/profile/picture.jpg"); (cosa que no funciona de momento, las bases de datos pueden guardar .jpg??)
             if (usernameLabel != null) {
                 usernameLabel.setText("@" + currentUser.getUsername());
@@ -87,11 +75,8 @@ public class ProfileController {
 
     private void loadFeedAndFavorites() {
         try {
-            /*DbAccessManager dbManager = new DbAccessManager();
-            List<Post> posts = dbManager.getAllPosts();*/
-
-            // CRITICAL CHANGE: Use the injected businessLogic instead of creating a new DbAccessManager!
-            // This ensures we reuse the same database connection
+            
+            // load all posts from the db
             List<Post> posts = businessLogic.getAllPosts();
 
             showFeedPosts(posts);
@@ -104,21 +89,6 @@ public class ProfileController {
         }
     }
 
-    /*private void showFeedPosts(List<Post> posts) {
-        if (feedContainer == null) {
-            return;
-        }
-
-        feedContainer.getChildren().clear();
-        if (posts == null || posts.isEmpty()) {
-            showEmptyFeed();
-            return;
-        }
-
-        for (Post post : posts) {
-            feedContainer.getChildren().add(createPostCard(post));
-        } // Ineficiente, pero suficiente para esta demo. Para mejorar, se podría implementar paginación o carga bajo demanda.
-    }*/
 
     private void showFeedPosts(List<Post> posts) {
         if (feedContainer == null) {
@@ -246,11 +216,18 @@ public class ProfileController {
     @FXML
     private void backButtonClicked() {
         try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/eus/ehu/FeedPage.fxml"));
-            javafx.scene.Parent root = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/eus/ehu/FeedPage.fxml"));
+            Parent root = loader.load();
             
+            // get controller for the feed page
+            FeedController feedController = loader.getController();
+
+            // inject the business logic to the feed controller so it can load the posts from the db
+            feedController.initData(this.businessLogic); // pass the bl so the feed can load the posts from the db
+            
+
             // Navigate back to the feed in the current window.
-            javafx.stage.Stage stage = (javafx.stage.Stage) feedScroll.getScene().getWindow();
+            Stage stage = (javafx.stage.Stage) feedScroll.getScene().getWindow();
             stage.setScene(new javafx.scene.Scene(root));
             stage.setTitle("Feed");
             

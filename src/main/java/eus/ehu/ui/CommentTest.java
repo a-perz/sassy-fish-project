@@ -32,7 +32,7 @@ public class CommentTest extends Application {
 
         // 3. get the controller and pass the mock data
         CommentOnPostController controller = loader.getController();
-        controller.initData(dummyPost, dummyUser, dummyLogic);
+        controller.initData(dummyPost, dummyLogic);
 
         // 4. show the window
         primaryStage.setTitle("Test - Add Comment");
