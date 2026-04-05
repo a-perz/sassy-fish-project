@@ -49,7 +49,7 @@ public class ProfileTest extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/eus/ehu/profile.fxml"));
         Parent root = loader.load();
         ProfileController controller = loader.getController();
-        controller.initData(new BusinessLogic(), profileUser);
+        controller.initData(new BusinessLogic());
         // Loading posts after having creted posts in DB to ensure they have IDs and are properly linked to the user
         primaryStage.setTitle("Test - Profile");
         primaryStage.setScene(new Scene(root));
