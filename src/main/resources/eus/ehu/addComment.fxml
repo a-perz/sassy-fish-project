@@ -23,8 +23,8 @@
       <Button fx:id="cancelButton" layoutX="335.0" layoutY="466.0" mnemonicParsing="false" onAction="#cancelComment" text="Cancel" />
       <TableView fx:id="commentsTable" layoutX="43.0" layoutY="42.0" prefHeight="300.0" prefWidth="396.0">
         <columns>
-          <TableColumn prefWidth="75.0" text="user" />
-          <TableColumn prefWidth="75.0" text="comment" />
+          <TableColumn fx:id="usernameColumn" prefWidth="100.0" text="user" />
+          <TableColumn fx:id="commentTextColumn" prefWidth="300.0" text="comment" />
         </columns>
       </TableView>
    </children>

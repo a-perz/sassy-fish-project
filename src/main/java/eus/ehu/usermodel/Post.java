@@ -38,10 +38,12 @@ public class Post {
     private List<Tag> tags = new ArrayList<>(); // ENUM of tags
     private LocalDate date;
 
+    private int likeCount = 0;
+
     // cascade: if a post is deleted, its comments are also deleted
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
-
+    
     // IMAGE
     @Transient
     private Image image;
@@ -154,6 +156,14 @@ public class Post {
     
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
     }
     
 }

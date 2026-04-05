@@ -1,8 +1,5 @@
 package eus.ehu.data_access;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-
 import java.util.List;
 
 import org.hibernate.boot.MetadataSources;
@@ -12,6 +9,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import eus.ehu.usermodel.Comment;
 import eus.ehu.usermodel.Post;
 import eus.ehu.usermodel.User;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 public class DbAccessManager {
 
@@ -161,6 +160,21 @@ public class DbAccessManager {
         db.persist(comment);
         db.getTransaction().commit();
     }
+
+    public List<Comment> getAllComments() {
+        return db.createQuery("FROM Comment", Comment.class).getResultList();
+    }
+
+        public void updateLikePost(Post post) {
+            db.getTransaction().begin();
+            Post managedPost = db.find(Post.class, post.getLikeCount());
+            
+            if(managedPost != null) {
+                managedPost.setLikeCount(managedPost.getLikeCount() + 1); // increment like count
+                db.persist(managedPost);
+            }
+            db.getTransaction().commit();
+        }
 }
 
 

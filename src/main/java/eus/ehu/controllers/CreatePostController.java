@@ -118,12 +118,6 @@ public class CreatePostController {
     }   
 
     @FXML
-    void handleDragOver(DragEvent event) {
-        // TODO:
-        // photo dragged over the image area -> change style to indicate that the user can drop the photo there 
-    }
-
-    @FXML
     void handleStarClicked(MouseEvent event) {
         
         // get the star that was clicked
@@ -186,10 +180,10 @@ public class CreatePostController {
 
         // if selected -> style red
         if (isSelected) {
-            favouriteButton.setStyle("-fx-text-fill: red");
+            favouriteButton.setStyle("-fx-text-fill: red; -fx-font-size: 40px; -fx-background-color: transparent;");
         
         } else { // if not selected -> style grey
-            favouriteButton.setStyle("-fx-text-fill: #b9b9b9");
+            favouriteButton.setStyle("-fx-text-fill: #b9b9b9; -fx-font-size: 40px; -fx-background-color: transparent;");
         }
 
         // save value inside Post object (for later saving to db)
@@ -330,7 +324,7 @@ public class CreatePostController {
         
         // 3. favourite starts unselected
         favouriteButton.setSelected(false);
-        favouriteButton.setStyle("-fx-text-fill: #b9b9b9;");
+        favouriteButton.setStyle("-fx-text-fill: #b9b9b9; -fx-font-size: 40px; -fx-background-color: transparent;");
 
         // 4. add today's date (date format: yyyy-mm-dd)
         currentPost.setDate(LocalDate.now() ); // add date to the Post object db

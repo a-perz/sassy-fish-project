@@ -1,6 +1,7 @@
 package eus.ehu.controllers;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import eus.ehu.businesslogic.BlInterface;
 import eus.ehu.usermodel.Comment;
@@ -8,12 +9,17 @@ import eus.ehu.usermodel.Post;
 import eus.ehu.usermodel.User;
 import javafx.animation.PauseTransition;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 public class CommentOnPostController {
@@ -30,6 +36,20 @@ public class CommentOnPostController {
     @FXML
     private Label errorLabel;
 
+
+    // TABLE OF COMMENTS
+    @FXML
+    private TableView<Comment> commentsTable;
+
+    @FXML
+    private TableColumn<Comment, String> usernameColumn;
+
+    @FXML
+    private TableColumn<Comment, String> commentTextColumn;
+    
+    @FXML
+    private ObservableList<Comment> comments;
+    
     // variables to store the context of the comment
     private Post currentPost;
     private User currentUser;
@@ -59,6 +79,11 @@ public class CommentOnPostController {
                 commentArea.textProperty()
             )
         );
+
+        // TABLE OF COMMENTS
+        // set up the column cell value factories for the tables
+        usernameColumn.setCellValueFactory(new PropertyValueFactory<>("author")); //calls getAuthor() from Comment class
+        commentTextColumn.setCellValueFactory(new PropertyValueFactory<>("text")); //calls getText() from Comment class
     }
 
     // method to receive data from the window that opens this controller
@@ -66,6 +91,9 @@ public class CommentOnPostController {
         this.currentPost = post;
         this.currentUser = user;
         this.businessLogic = bl;
+
+        // load the comments of the post into the table
+        loadComments();
     }
 
     // handle the save button click event
@@ -110,7 +138,9 @@ public class CommentOnPostController {
         
         // clear the comment area after saving
         commentArea.clear();
-        openFeedAndCloseComment();
+       
+        // refresh the comments table to show the new comment
+        loadComments();
     }
 
     //handle the cancel button click event
@@ -133,5 +163,17 @@ public class CommentOnPostController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void loadComments() {
+
+        // get comments from current post
+        List<Comment> commentsPost = currentPost.getComments();
+    
+        // add them to the observable list
+        comments = FXCollections.observableArrayList(commentsPost);
+
+        // show them in the table
+        commentsTable.setItems(comments);
     }
 }

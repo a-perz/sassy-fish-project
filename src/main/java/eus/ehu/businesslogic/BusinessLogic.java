@@ -27,8 +27,18 @@ public class BusinessLogic implements BlInterface {
     }
 
     @Override
+    public void updateLikePost(Post post) {
+        dbManager.updateLikePost(post); // db updates the like count of the post
+    }
+
+    @Override
     public List<Post> getAllPosts() {
         
         return dbManager.getAllPosts(); // ask the real database to fetch all posts
+    }
+
+    @Override
+    public List<Comment> getAllComments() {
+        return dbManager.getAllComments(); // ask the real database to fetch all comments
     }
 }

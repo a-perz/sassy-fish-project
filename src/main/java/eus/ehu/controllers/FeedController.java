@@ -18,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -37,7 +38,7 @@ public class FeedController {
     private VBox feedContainer; // this is the empty vertical box where we will inject our posts
     @FXML
     private HBox PostMockup;
-
+    
     private BusinessLogic businessLogic;
 
     // initialize() is a magic javafx method that runs automatically right after the fxml is loaded
@@ -46,11 +47,20 @@ public class FeedController {
         try {
             // 1. instantiate the business logic (which talks to the database under the hood)
             // BusinessLogic bl = new BusinessLogic(); 
-            
+            this.businessLogic = new BusinessLogic();
+
             // 2. get the list of all posts and pass them to the method that draws the ui
             //showPosts(bl.getAllPosts());
+            if (businessLogic.getAllPosts().isEmpty()) { // empty db at the start
+                Post p = new Post();
+                p.setTitle("First post");
+                p.setAuthor("me");
+                p.setDescription("test");
+                p.setLikeCount(0);
+                p.setStarRating(4.0);
+                businessLogic.savePost(p);
+            }
 
-            this.businessLogic = new BusinessLogic();
             showPosts(this.businessLogic.getAllPosts());
 
         } catch (Exception e) {
@@ -58,6 +68,8 @@ public class FeedController {
             // fallback: if the database fails, we pass an empty list so the app doesn't crash completely
             showPosts(new ArrayList<>()); 
         }
+
+        
     }
 
     // this method loops through the list of posts and creates a visual component for each one
@@ -78,6 +90,42 @@ public class FeedController {
         openCreatePostView();
     }
 
+    @FXML
+    // one like button for each post, so we pass the specific button and post that was clicked as parameters
+    private void handleLikeButton(ToggleButton likeBtn, Post post) {
+        
+        int likes = post.getLikeCount();
+
+        //initializa default style
+        likeBtn.setStyle("-fx-text-fill: #f0f0f0d2; -fx-background-color: transparent; -fx-font-size: 20px");
+        likeBtn.setText("♥" + likes);
+
+        // check if button is selected
+        boolean selectedBefore = false;
+        boolean isSelected = likeBtn.isSelected();
+        
+        // if selected -> style red
+        if (isSelected) {
+            post.setLikeCount(likes++);
+            likeBtn.setStyle("-fx-text-fill: #ff0000e6; -fx-background-color: transparent; -fx-font-size: 20px");
+        } else { // if not selected -> style grey
+            if (selectedBefore) {
+                post.setLikeCount(likes--);
+                likeBtn.setStyle("-fx-text-fill: #f0f0f0d2; -fx-background-color: transparent; -fx-font-size: 20px");
+            }
+        }
+        // save to compare in the next click
+        selectedBefore = likeBtn.isSelected();
+
+        // update the like count in the database via business logic
+        this.businessLogic.updateLikePost(post);
+    
+        // update the button text to show the new like count
+        likeBtn.setText("♥" + likes);
+
+    }
+    
+   
     /*  triggered by the fxml when the user clicks the profile button
     @FXML
     void profileButtonClicked() {
@@ -170,10 +218,10 @@ public class FeedController {
     }
 
     // this is the factory method. it builds a user interface dynamically using java code instead of fxml
-    public VBox createPostCard(Post post) {
+    public HBox createPostCard(Post post) {
         
-        // 1. create the main container for this single post. vbox means elements stack vertically
-        VBox postCard = new VBox(10); 
+        // 1. create the main container for this single post. hbox means elements stack horizontally
+        HBox postCard = new HBox(10); 
         // add css styling directly via code to make it look like a card
         postCard.setStyle("-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 15; -fx-background-color: white;");
 
@@ -226,15 +274,24 @@ public class FeedController {
         // add the three text labels into the inner text box
         postContent.getChildren().addAll(titleLabel, authorLabel, descriptionLabel);
 
-        // 5. create the comment button, showing the current amount of comments dynamically
+        // 5. create the comment button for each post, showing the current amount of comments dynamically
         Button commentButton = new Button("💬 comment (" + post.getComments().size() + ")");
         commentButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 12px;");
         
         // this is a lambda expression. it says: "when clicked, run opencommentview() and pass THIS specific post"
         commentButton.setOnAction(e -> openCommentView(post));
 
-        // 6. assemble the final card by adding the text block and the comment button
-        postCard.getChildren().addAll(postContent, commentButton);
+        // 6. create like button for each post, showing the current amount of likes dynamically
+        ToggleButton likeButton = new ToggleButton();
+
+        // this is a lambda expression. it says: "when clicked, run handleLikeButton() and pass THIS specific post"
+        likeButton.setOnAction(e -> handleLikeButton(likeButton, post));
+
+        // set initial text and style for the like button
+        handleLikeButton(likeButton, post);
+
+        // 7. assemble the final card by adding the text block and the comment button
+        postCard.getChildren().addAll(postContent, commentButton, likeButton);
 
         // return the fully assembled visual component so showposts() can put it on the screen
         return postCard;
