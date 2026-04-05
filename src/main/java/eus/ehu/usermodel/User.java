@@ -23,7 +23,7 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String username;
-    private String email;
+    private String password;
     private String profilePicturePath;
 
     @OneToMany(mappedBy = "user")
@@ -33,10 +33,13 @@ public class User {
         this.posts = new java.util.ArrayList<>();
     }   //Default constructor for JPA  
 
-    public User(String username, String email){
+    public User(String username, String password){
         this.username = username;
-        this.email = email;
-        this.posts = new java.util.ArrayList<>();
+        this.password = password;
+
+        this.bio="Hello! I'm new here.";
+        this.location="Unknown";
+        this.profilePicturePath="default.png";
     }
 
         // Getters y Setters básicos
@@ -46,8 +49,8 @@ public class User {
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
     
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
     
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }

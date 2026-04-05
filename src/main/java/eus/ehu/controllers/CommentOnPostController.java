@@ -3,7 +3,7 @@ package eus.ehu.controllers;
 import java.time.LocalDate;
 import java.util.List;
 
-import eus.ehu.businesslogic.BlInterface;
+import eus.ehu.businesslogic.BusinessLogic;
 import eus.ehu.usermodel.Comment;
 import eus.ehu.usermodel.Post;
 import eus.ehu.usermodel.User;
@@ -12,6 +12,9 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -53,7 +56,7 @@ public class CommentOnPostController {
     // variables to store the context of the comment
     private Post currentPost;
     private User currentUser;
-    private BlInterface businessLogic; 
+    private BusinessLogic businessLogic; 
 
 
     // initialize method to set up the character limit and word count display
@@ -87,9 +90,8 @@ public class CommentOnPostController {
     }
 
     // method to receive data from the window that opens this controller
-    public void initData(Post post, User user, BlInterface bl) {
+    public void initData(Post post, BusinessLogic bl) {
         this.currentPost = post;
-        this.currentUser = user;
         this.businessLogic = bl;
 
         // load the comments of the post into the table
@@ -119,6 +121,10 @@ public class CommentOnPostController {
             return;
         }
 
+        // get user from bl (it should be there cause you can't get to the comment screen without being logged in)
+        currentUser = businessLogic.getCurrentUser(); // get the current logged-in user from the business logic
+
+        // shouldn't happen but just in case
         if(currentPost == null || currentUser == null) {
             System.out.println("post or user context is missing!");
             return;
@@ -130,9 +136,6 @@ public class CommentOnPostController {
         // create the comment object
         Comment newComment = new Comment(currentUser.getUsername(), commentText, LocalDate.now(), currentPost);
         
-        // add the comment to the post internally (in mem)
-        currentPost.addComment(newComment); 
-
         // send it to the database via business logic
         businessLogic.addCommentToPost(currentPost, newComment);
         
@@ -151,11 +154,17 @@ public class CommentOnPostController {
 
     private void openFeedAndCloseComment() {
         try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/eus/ehu/FeedPage.fxml"));
-            javafx.scene.Parent root = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/eus/ehu/FeedPage.fxml"));
+            Parent root = loader.load();
 
+            // get controller for the feed page
+            FeedController feedController = loader.getController();
+
+            // inject the business logic to the feed controller so it can load the posts from the db
+            feedController.initData(this.businessLogic); // pass the bl so the feed can load the posts from the db
+            
             Stage feedStage = new Stage();
-            feedStage.setScene(new javafx.scene.Scene(root));
+            feedStage.setScene(new Scene(root));
             feedStage.show();
 
             Stage commentStage = (Stage) saveButton.getScene().getWindow();

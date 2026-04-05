@@ -19,6 +19,9 @@ public interface BlInterface {
     // retrieves a list of all posts currently stored in the databas
     List<Post> getAllPosts();
 
+    // retrieves a list of posts created by a specific user
+    List<Post> getPostsByUser(String username); 
+    
     // retrieves a list of all comments currently stored in the database
     List<Comment> getAllComments();
 }

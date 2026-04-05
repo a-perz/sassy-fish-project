@@ -5,11 +5,44 @@ import java.util.List;
 import eus.ehu.data_access.DbAccessManager;
 import eus.ehu.usermodel.Comment;
 import eus.ehu.usermodel.Post;
+import eus.ehu.usermodel.User;
 
 public class BusinessLogic implements BlInterface {
     
     private DbAccessManager dbManager = new DbAccessManager(); // real db manager
     
+    // we store the logged-in user so all controllers can access it through the bl
+    private User currentUser;
+    
+    public User getCurrentUser() {
+        return this.currentUser;
+    }
+
+    public boolean login(String username, String password) {
+
+        User dbUser = dbManager.getUserByUsername(username); // ask the database for a user with the given username
+        
+
+        // if the user doesn't exist, we create it with the provided credentials and store it in the database
+        if (dbUser == null) {
+            User newUser = new User(username, password);
+            dbManager.storeUser(newUser);
+            this.currentUser = newUser; // save the new user in the bl for the rest of the controllers to access
+            System.out.println("new user '" + username + "' created and logged in successfully");
+            return true; // we consider that creating a new user is also a successful login
+
+        }  else if (dbUser.getPassword().equals(password)) {
+            // we found the user + valid credentials
+            
+            this.currentUser = dbUser; // save the user in the bl for the rest of the controllers to access
+            System.out.println("user '" + username + "' logged in successfully");
+            return true;
+        }
+
+        // user exists but password is wrong
+        return false; 
+
+    }
 
     @Override
     public void addCommentToPost(Post post, Comment comment) {
@@ -35,6 +68,11 @@ public class BusinessLogic implements BlInterface {
     public List<Post> getAllPosts() {
         
         return dbManager.getAllPosts(); // ask the real database to fetch all posts
+    }
+
+    @Override 
+    public List<Post> getPostsByUser(String username) {
+        return dbManager.getPostsByUser(username); // ask the real database to fetch posts by a specific user
     }
 
     @Override
