@@ -200,11 +200,8 @@ public class CreatePostController {
     void cancelPost() {
 
         // CLOSE WINDOW get back to previous screen (main feed)
-        //imageDropArea.getScene().getWindow().hide();
-
-            // no need to clear and reset everything cause we create a new CreatePostController (with empty Post and unselected fields) every time we open the CreatePost screen
-    
         goBackToFeed();
+            // no need to clear and reset everything cause we create a new CreatePostController (with empty Post and unselected fields) every time we open the CreatePost screen
     }
 
     @FXML
