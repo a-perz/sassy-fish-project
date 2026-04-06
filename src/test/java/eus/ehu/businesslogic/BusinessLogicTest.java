@@ -31,7 +31,6 @@ class BusinessLogicTest {
         testPost.setDescription("If you see this, the test is working!");
         testPost.setDate(LocalDate.now());
         testPost.setStarRating(5.0);
-        testPost.setIsFavourite(true);
         
         // Link them together just like we do in the controllers
         testPost.setUser(testUser);
@@ -52,3 +51,5 @@ class BusinessLogicTest {
         assertTrue(postFound, "The post we just saved should be found in the database");
     }
 }
+
+// run with mvn clean test -> wait 4 the BUILD SUCCESS message in the console 
