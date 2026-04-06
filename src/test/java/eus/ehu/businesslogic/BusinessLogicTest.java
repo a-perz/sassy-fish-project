@@ -1,5 +1,8 @@
 package eus.ehu.businesslogic;
 
+
+// inspired form here: https://gist.github.com/juananpe/5c80302aa0b6127a7fd7dde0318bf1a5
+
 import eus.ehu.usermodel.Post;
 import eus.ehu.usermodel.User;
 import org.junit.jupiter.api.BeforeEach;

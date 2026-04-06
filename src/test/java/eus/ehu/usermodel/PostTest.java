@@ -1,5 +1,8 @@
 package eus.ehu.usermodel;
 
+// inspired form here: https://gist.github.com/juananpe/5c80302aa0b6127a7fd7dde0318bf1a5
+
+
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
