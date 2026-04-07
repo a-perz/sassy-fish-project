@@ -112,7 +112,7 @@ public class CreatePostController {
             Image img = new Image(file.toURI().toString());
                 // Image can be displayed in ImageView directly
             
-            // 2. display image in ImageViewm (visually)
+            // 2. display image in ImageView (visually)
             imageView.setImage(img);
         
             // 3. update Post object to store the path to the image (for later saving to db)
@@ -200,7 +200,8 @@ public class CreatePostController {
 
         // CLOSE WINDOW get back to previous screen (main feed)
         goBackToFeed();
-            // no need to clear and reset everything cause we create a new CreatePostController (with empty Post and unselected fields) every time we open the CreatePost screen
+        // no need to clear and reset everything cause we create a new CreatePostController 
+        // (with empty Post and unselected fields) every time we open the CreatePost screen
     }
 
     @FXML
@@ -260,7 +261,8 @@ public class CreatePostController {
                 );
             }
 
-            // 8. go back to feed and refresh the posts to show the new post (instead of just going back without refreshing and having to click the profile button to see the new post in the feed)
+            // 8. go back to feed and refresh the posts to show the new post 
+            // (instead of just going back without refreshing and having to click the profile button to see the new post in the feed)
             goBackToFeed();
         }
     }
@@ -296,7 +298,8 @@ public class CreatePostController {
 
         // if any of them missing -> missing = true = errorLabel set visible
         // else (all correct) -> missing = false = errorLabel set !visible
-        errorLabel.setVisible(missing);
+        errorLabel.setVisible(missing); 
+        // "Please fill in all required fields" error message only visible if there's any missing field
 
         if (missing) {
             
@@ -353,7 +356,7 @@ public class CreatePostController {
         dateLabel.setText(currentPost.getDate().toString() ); // display on window (make it String)
     }
 
-    // met o go back to the feed after creating a post (called at the end of savePost() and cancelPost())
+    // method to go back to the feed after creating a post (called at the end of savePost() and cancelPost())
     private void goBackToFeed() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/eus/ehu/FeedPage.fxml"));

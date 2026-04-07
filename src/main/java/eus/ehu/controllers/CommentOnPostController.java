@@ -26,7 +26,7 @@ import javafx.stage.Stage;
 public class CommentOnPostController {
 
     @FXML
-    private TextField wordCount;
+    private TextField wordCount; // Actually a Character count
 
     @FXML
     private TextArea commentArea;
@@ -38,7 +38,7 @@ public class CommentOnPostController {
     private Label errorLabel;
 
     @FXML
-    private VBox commentsContainer;
+    private VBox commentsContainer; // container to hold the previous comment cards
 
     // variables to store the context of the comment
     private Post currentPost;
@@ -83,19 +83,19 @@ public class CommentOnPostController {
             return;
         }
         commentsContainer.getChildren().clear();
-
+        // If there are no comments, show a message instead of an empty container
         if (currentPost == null || currentPost.getComments() == null || currentPost.getComments().isEmpty()) {
             Label emptyLabel = new Label("No comments yet. Be the first one.");
             emptyLabel.setStyle("-fx-text-fill: #64748b; -fx-font-size: 13px; -fx-padding: 8;");
             commentsContainer.getChildren().add(emptyLabel);
             return;
         }
-
+        // Add comments in reverse order to show the most recent ones at the top
         for (int index = currentPost.getComments().size() - 1; index >= 0; index--) {
             commentsContainer.getChildren().add(createCommentCard(currentPost.getComments().get(index)));
         }
     }
-
+    // helper method to create a card for each comment, similar to the post cards in the feed but simpler
     private VBox createCommentCard(Comment comment) {
         VBox card = new VBox(6);
         card.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #e2e8f0; -fx-border-radius: 14; -fx-padding: 10;");
@@ -121,7 +121,8 @@ public class CommentOnPostController {
         card.getChildren().addAll(header, textLabel);
         return card;
     }
-
+    // helper method to refresh the current post from the database after adding a comment,
+    //  to ensure we show the persisted state in the comments panel
     private void refreshCurrentPostFromDatabase() {
         if (businessLogic == null || currentPost == null || currentPost.getId() == null) {
             return;
@@ -142,11 +143,11 @@ public class CommentOnPostController {
     void handleSave() {
         String commentText = commentArea.getText(); // get the comment text from the text area
         
-        // basic validaiton
-
+        // basic validation
         if (commentText.trim().isEmpty()) {
             System.out.println("comment is empty!");
-            errorLabel.setVisible(true);
+            errorLabel.setVisible(true); 
+            // "comment cannot be empty" error message is shown in the UI
             
             // after 3 secs. -> hide the error label again
             PauseTransition pause = new PauseTransition(javafx.util.Duration.seconds(3));
@@ -166,7 +167,7 @@ public class CommentOnPostController {
         }
 
         // get user from bl (it should be there cause you can't get to the comment screen without being logged in)
-        currentUser = businessLogic.getCurrentUser(); // get the current logged-in user from the business logic
+        currentUser = businessLogic.getCurrentUser(); 
 
         // shouldn't happen but just in case
         if(currentPost == null || currentUser == null) {
@@ -206,7 +207,7 @@ public class CommentOnPostController {
             FeedController feedController = loader.getController();
 
             // inject the business logic to the feed controller so it can load the posts from the db
-            feedController.initData(this.businessLogic); // pass the bl so the feed can load the posts from the db
+            feedController.initData(this.businessLogic); 
             
             Stage feedStage = new Stage();
             feedStage.setScene(new Scene(root));

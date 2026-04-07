@@ -27,7 +27,7 @@ import javafx.stage.Stage;
 
 public class FeedController {
 
-    // links these java variables to the specific id tags in your feed.fxml file
+    // links these java variables to the specific id tags in feed.fxml file
     @FXML
     private ScrollPane feedScroll;
     @FXML
@@ -119,64 +119,6 @@ public class FeedController {
 
     }
     
-   
-    /*  triggered by the fxml when the user clicks the profile button
-    @FXML
-    void profileButtonClicked() {
-        try {
-            // 1. locate the fxml file for the profile screen
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/eus/ehu/profile.fxml"));
-            
-            // 2. load the fxml into a parent object (the root of the new scene graph)
-            Parent profileView = loader.load(); 
-            
-            // 3. get the current window (stage) using the button we just clicked
-            Stage stage = (Stage) profileButton.getScene().getWindow();
-            
-            // 4. change the scene to the new profile view
-            stage.setScene(new Scene(profileView));
-
-        } catch (Exception e) {
-            e.printStackTrace(); 
-        }
-    }*/
-   // triggered by the fxml when the user clicks the profile button
-    /*@FXML
-    void profileButtonClicked() {
-        try {
-            // 1. locate the fxml file for the profile screen
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/eus/ehu/profile.fxml"));
-            
-            // 2. load the fxml into a parent object (the root of the new scene graph)
-            Parent profileView = loader.load(); 
-            
-            // we get the profile controller
-            ProfileController controller = loader.getController();
-
-            // we create our fake user for the demo
-            User currentUser = new User();
-            currentUser.setUsername("currentUser"); 
-            currentUser.setBio("aupa eibar yay");
-
-            // we inject the connection and the user to the Profile
-            controller.initData(this.businessLogic, currentUser);
-
-            // 3. get the current window (stage) using the button we just clicked
-            Stage stage = (Stage) profileButton.getScene().getWindow();
-            
-            // 4. change the scene to the new profile view
-            stage.setScene(new Scene(profileView));
-            stage.setTitle("User Profile"); // Un detalle para que la ventana quede bonita
-
-        } catch (Exception e) {
-            e.printStackTrace(); 
-        }
-    }
-
-    @FXML
-    void openProfile() {
-        System.out.println("profile button clicked!");
-    } */
 
     // triggered by the fxml when the user clicks the profile button
     @FXML
@@ -389,7 +331,8 @@ public class FeedController {
             // 2. get the controller so we can pass data to it
             CreatePostController controller = loader.getController();
 
-            // 3. inject the bl with the logged-in user inside to the create post controller so it can save the new post to the database with the correct user as author
+            // 3. inject the bl with the logged-in user inside to the create post controller
+            //  so it can save the new post to the database with the correct user as author
             controller.initData(this.businessLogic);
 
             // 5. switch the scene

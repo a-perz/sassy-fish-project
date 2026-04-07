@@ -26,8 +26,8 @@ public class BusinessLogic implements BlInterface {
         // if the user doesn't exist, we create it with the provided credentials and store it in the database
         if (dbUser == null) {
             User newUser = new User(username, password);
-            dbManager.storeUser(newUser);
-            this.currentUser = newUser; // save the new user in the bl for the rest of the controllers to access
+            dbManager.storeUser(newUser); // save the new user in the bl for the rest of the controllers to access
+            this.currentUser = newUser; 
             System.out.println("new user '" + username + "' created and logged in successfully");
             return true; // we consider that creating a new user is also a successful login
 
