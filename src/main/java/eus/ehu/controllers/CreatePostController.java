@@ -11,9 +11,7 @@ import eus.ehu.usermodel.Tag;
 import eus.ehu.usermodel.User;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -358,23 +356,13 @@ public class CreatePostController {
 
     // method to go back to the feed after creating a post (called at the end of savePost() and cancelPost())
     private void goBackToFeed() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/eus/ehu/FeedPage.fxml"));
-            Parent root = loader.load();
-            
-            // get controller for the feed page
-            FeedController feedController = loader.getController();
+        
+        // get the current window (the create post window)
+        Stage stage = (Stage) titleField.getScene().getWindow();
 
-            // inject the business logic to the feed controller so it can load the posts from the db
-            feedController.initData(this.businessLogic); // pass the bl so the feed can load the posts from the db
+        // close window
+        stage.close();
 
-            // take the user back to the feed page (switch scene)
-            Stage stage = (javafx.stage.Stage) titleField.getScene().getWindow();
-            stage.setScene(new javafx.scene.Scene(root));
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }

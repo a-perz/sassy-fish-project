@@ -230,7 +230,7 @@ public class FeedController {
         commentButton.setAlignment(Pos.CENTER_LEFT);
         
         // this is a lambda expression. it says: "when clicked, run opencommentview() and pass THIS specific post"
-        commentButton.setOnAction(e -> openCommentView(post));
+        commentButton.setOnAction(e -> openCommentView(post, commentButton));
 
         mediaColumn.getChildren().add(commentButton);
 
@@ -302,7 +302,7 @@ public class FeedController {
     // END BETTER VERSION AUXILIAR
 
     // helper method to navigate to the comments screen for a specific post
-    private void openCommentView(Post post) {
+    private void openCommentView(Post post, Button commentButton) {
         try {
             if (this.businessLogic == null) {
                 return;
@@ -318,10 +318,14 @@ public class FeedController {
             // 4. inject our context into the new controller before showing the window
             controller.initData(post, this.businessLogic);
 
-            // 5. switch the visible scene to the comments screen
-            Stage stage = (Stage) feedScroll.getScene().getWindow();
-            stage.setScene(new Scene(commentView));
-            stage.setTitle("add comment - " + post.getTitle());
+            // 5. pass button to update its text later
+            controller.setCommentButton(commentButton);
+            
+            // 5. create the mew comments window (scene)
+            Stage newStage = new Stage();
+            newStage.setScene(new Scene(commentView));
+            newStage.setTitle("add comment - " + post.getTitle());
+            newStage.show();
 
         } catch (Exception e) {
             System.err.println("error opening comment view: " + e.getMessage());
@@ -343,10 +347,15 @@ public class FeedController {
             //  so it can save the new post to the database with the correct user as author
             controller.initData(this.businessLogic);
 
-            // 5. switch the scene
-            Stage stage = (Stage) newPostButton.getScene().getWindow();
-            stage.setScene(new Scene(createPostView));
-            stage.setTitle("create new post");
+            // 4. open the new create post window (scene)
+            Stage newStage = new Stage();
+            newStage.setScene(new Scene(createPostView));
+            newStage.setTitle("create new post");
+            newStage.showAndWait(); // wait until the new window closes to update (refresh)
+
+            // 5. refresh feed
+            List<Post> posts = this.businessLogic.getAllPosts();
+            showPosts(posts);
 
         } catch (Exception e) {
             System.err.println("error opening create post view: " + e.getMessage());

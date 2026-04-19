@@ -9,9 +9,6 @@ import eus.ehu.usermodel.User;
 import javafx.animation.PauseTransition;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -20,12 +17,8 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox; // BETTER VERSION
-import javafx.stage.Stage;
-/* // SIMPLE VERSION
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
- */
+import javafx.scene.layout.VBox;
+ import javafx.stage.Stage;
 
 public class CommentOnPostController {
 
@@ -40,6 +33,10 @@ public class CommentOnPostController {
 
     @FXML
     private Label errorLabel;
+
+    // not diplayed. just to keep it updated on the feed page
+    @FXML
+    private Button commentButton;
 
     // TABLE OF COMMENTS
     
@@ -235,31 +232,27 @@ public class CommentOnPostController {
         reloadComments();
         // END BETTER VERSION
         
+        // update comment count in feed instantly
+        commentButton.setText("💬 Comments (" + currentPost.getComments().size() + ")");
+
         // clear the comment area after saving
         commentArea.clear();
+
     }
 
     //handle the cancel button click event
     @FXML
     private void cancelComment() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/eus/ehu/FeedPage.fxml"));
-            Parent root = loader.load();
+        // get the current window (comments window)
+        Stage stage = (Stage) commentArea.getScene().getWindow();
 
-            // get controller for the feed page
-            FeedController feedController = loader.getController();
-
-            // inject the business logic to the feed controller so it can load the posts from the db
-            feedController.initData(this.businessLogic); 
-            
-            Stage feedStage = new Stage();
-            feedStage.setScene(new Scene(root));
-            feedStage.show();
-
-            Stage commentStage = (Stage) saveButton.getScene().getWindow();
-            commentStage.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // close it
+        stage.close();
     }
+
+    // comment count button on feed
+    public void setCommentButton(Button button) {
+        this.commentButton = button;
+    }
+    
 }
