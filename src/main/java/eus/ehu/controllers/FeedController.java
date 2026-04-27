@@ -120,7 +120,7 @@ public class FeedController {
             if (likes > 0) { // avoid negative like count
                 likes--; // decrement
             }
-            likeBtn.setStyle("-fx-text-fill: #f0f0f060; -fx-background-color: transparent; -fx-font-size: 20px");
+            likeBtn.setStyle("-fx-text-fill: #b9b9b9; -fx-background-color: transparent; -fx-font-size: 20px");
         }
 
         // update the like count in the post object in memory
@@ -268,7 +268,7 @@ public class FeedController {
 
         // set initial text and style
         likeButton.setText("♥" + post.getLikeCount());
-        likeButton.setStyle("-fx-text-fill: #f0f0f060; -fx-background-color: transparent; -fx-font-size: 20px;");
+        likeButton.setStyle("-fx-text-fill: #b9b9b9; -fx-background-color: transparent; -fx-font-size: 20px;");
         likeButton.setSelected(false); // default state -> not liked
 
         // this is a lambda expression. it says: "when clicked, run handleLikeButton() and pass THIS specific post"
