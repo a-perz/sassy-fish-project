@@ -16,27 +16,28 @@ import java.util.stream.Collectors;
 import eus.ehu.businesslogic.BusinessLogic;
 import eus.ehu.usermodel.Post;
 import eus.ehu.usermodel.User;
-import javafx.scene.Cursor;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.control.Label;
+
 
 public class ProfileController {
 
@@ -57,6 +58,8 @@ public class ProfileController {
     @FXML private ScrollPane feedScroll;
     @FXML private VBox feedContainer;
     @FXML private Button saveChangesButton; 
+    @FXML private Button editProfileButton;
+    @FXML private Button backButton;
 
     private BusinessLogic businessLogic;
     private User currentUser;
@@ -382,6 +385,7 @@ public class ProfileController {
         return currentUser == null ? null : currentUser.getProfilePicturePath();
     }
 
+    // GO BACK TO VIEW MODE SAVING CHANGES
     @FXML
     private void saveChangesButtonClicked() {
         if (currentUser == null) {
@@ -414,12 +418,20 @@ public class ProfileController {
         saveChangesButton.setVisible(false);
     }
 
+    // GO BACK TO VIEW MODE WITHOUT SAVING CHANGES
+    @FXML
+    private void backButtonClicked() {
+        loadUserProfile();
+        loadFeedAndFavorites();
+        setMode(false);
+    }
+
+    
     @FXML
     private void handleProfileImageClicked(MouseEvent event) {
-        if (!editMode) {
-            editProfile();
+        if (editMode) {
+            openProfileImagePicker();
         }
-        openProfileImagePicker();
     }
 
     @FXML
@@ -683,14 +695,12 @@ public class ProfileController {
     }
 
     @FXML
-    private void backButtonClicked() {
+    private void homeButtonClicked() {
         try {
-            if (editMode) {
-                loadUserProfile();
-                loadFeedAndFavorites();
-                setMode(false);
-                return;
-            }
+
+            loadUserProfile();
+            loadFeedAndFavorites();
+            setMode(false);
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/eus/ehu/FeedPage.fxml"));
             Parent root = loader.load();
@@ -766,7 +776,11 @@ public class ProfileController {
         }
 
         setClickableFavouriteCursors();
+
+        // activate/deactivate buttons
         saveChangesButton.setVisible(editable);
         saveChangesButton.setManaged(editable);
+        editProfileButton.setVisible(!editable);
+        backButton.setVisible(editable);
     }
 }
