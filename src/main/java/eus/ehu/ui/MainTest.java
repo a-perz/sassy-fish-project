@@ -21,7 +21,7 @@ public class MainTest extends Application {
         LoginController loginController = loader.getController();
         loginController.setBusinessLogic(businessLogic);
         
-        primaryStage.setTitle("Sassy Fish - Social Media");
+        primaryStage.setTitle("Sassy Fish -ewwdrvevrddsvdsaderdvevevrvfdssddds Social Media");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
