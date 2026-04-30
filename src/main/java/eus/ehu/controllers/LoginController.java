@@ -31,7 +31,10 @@ public class LoginController {
     public void setBusinessLogic(BusinessLogic businessLogic) {
         this.businessLogic = businessLogic;
     }
-
+    public void initialize() {
+        errorLabel.setVisible(false);
+        loginButton.setDefaultButton(true);
+    }
     @FXML
     void handleCancel() {
 
