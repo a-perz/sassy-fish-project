@@ -154,39 +154,42 @@ public class DbAccessManager {
             User author = post.getUser();
             if(author != null) {
                 User managedAuthor = null;
-                // Once we have the author from the post object, we need to check if it already exists in the database.
+                String authorUsername = author.getUsername();
+
+                // Prefer a database-managed user instance if possible.
                 if (author.getId() != null) {
                     managedAuthor = db.find(User.class, author.getId());
                 }
-                
-                // If the author has an ID but is not found in the database, we should treat it as a new user and save it to get a valid ID.
-                if(managedAuthor == null) {
-                    System.out.println("Author is new or fake, saving to database first to get an ID...");
-                    db.persist(author); 
-                    // This automatically assigns a real ID to the user object, because of the @GeneratedValue
-                    managedAuthor = author; 
+                if (managedAuthor == null && authorUsername != null && !authorUsername.isBlank()) {
+                    managedAuthor = findUserByUsername(authorUsername);
+                }
+
+                if (managedAuthor == null) {
+                    System.out.println("Author is new or not yet persisted, saving to database first to get an ID...");
+                    db.persist(author);
+                    managedAuthor = author;
+                }
+
+                post.setUser(managedAuthor);
+                if (post.getAuthor() == null || post.getAuthor().isBlank()) {
+                    post.setAuthor(managedAuthor.getUsername());
                 }
 
                 Post existingPost = findPostByAuthorAndTitle(managedAuthor.getUsername(), post.getTitle());
                 if (existingPost != null) {
                     // Keep legacy rows up to date instead of skipping inserts silently.
-                    // Missing user
                     if (existingPost.getUser() == null) {
                         existingPost.setUser(managedAuthor);
                     }
-                    // Missing author
                     if (existingPost.getAuthor() == null || existingPost.getAuthor().isBlank()) {
                         existingPost.setAuthor(managedAuthor.getUsername());
                     }
-                    // Missing description
                     if (post.getDescription() != null && !post.getDescription().isBlank()) {
                         existingPost.setDescription(post.getDescription());
                     }
-                    // Missing image path
                     if (post.getImagePath() != null && !post.getImagePath().isBlank()) {
                         existingPost.setImagePath(post.getImagePath());
                     }
-                    // Update star rating if the new post has a valid rating
                     if (post.getStarRating() > 0.0) {
                         existingPost.setStarRating(post.getStarRating());
                     }
@@ -200,11 +203,9 @@ public class DbAccessManager {
                     return;
                 }
 
-                post.setUser(managedAuthor);
-                if (post.getAuthor() == null || post.getAuthor().isBlank()) {
-                    post.setAuthor(managedAuthor.getUsername());
+                if (!managedAuthor.getPosts().contains(post)) {
+                    managedAuthor.getPosts().add(post);
                 }
-                managedAuthor.getPosts().add(post);
             } else {
                 System.out.println("Post has no author!");
             }
