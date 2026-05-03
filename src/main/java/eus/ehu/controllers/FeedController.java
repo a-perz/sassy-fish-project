@@ -369,6 +369,9 @@ public class FeedController {
             // 2. get the controller so we can pass data to it
             CreatePostController controller = loader.getController();
 
+            // 3. initialize the controller with business logic
+            controller.initData(this.businessLogic);
+
             // 4. open the new create post window (scene)
             Stage newStage = new Stage();
             newStage.setScene(new Scene(createPostView));
